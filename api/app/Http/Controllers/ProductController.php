@@ -13,15 +13,7 @@ class ProductController extends Controller
      */
     public function index()
     {
-        //
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
+        return response()->json(Product::all());
     }
 
     /**
@@ -29,7 +21,18 @@ class ProductController extends Controller
      */
     public function store(StoreProductRequest $request)
     {
-        //
+        if ($request->hasFile('image')) {
+            $image = $request->file('image');
+            $path = $image->store('images', 'public');
+            $request->merge(['image' => $path]);
+        }
+
+        $product = Product::create($request->validated());
+
+        if (!$product) {
+            return response()->json(['message' => 'Erro ao criar um produto'], 500);
+        }
+        return response()->json($product, 201);
     }
 
     /**
@@ -37,15 +40,11 @@ class ProductController extends Controller
      */
     public function show(Product $product)
     {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Product $product)
-    {
-        //
+        $product = Product::find($product->id);
+        if (!$product) {
+            return response()->json(['message' => 'Produto não encontrado'], 404);
+        }
+        return response()->json($product, 201);
     }
 
     /**
@@ -53,7 +52,20 @@ class ProductController extends Controller
      */
     public function update(UpdateProductRequest $request, Product $product)
     {
-        //
+        $product = Product::find($product->id);
+
+        if (!$product) {
+            return response()->json(['message' => 'Produto não encontrado'], 404);
+        }
+
+        $path = $product->image;
+        if ($request->hasFile('image')) {
+            $image = $request->file('image');
+            $path = $image->store('images', 'public');
+            $request->merge(['image' => $path]);
+        }
+        $product->update($request->validated());
+        return response()->json($product, 201);
     }
 
     /**
@@ -61,6 +73,11 @@ class ProductController extends Controller
      */
     public function destroy(Product $product)
     {
-        //
+        $product = Product::find($product->id);
+        if (!$product) {
+            return response()->json(['message' => 'Produto não encontrado'], 404);
+        }
+        $product->delete();
+        return response()->json(['message' => 'Produto deletado com sucesso'], 200);
     }
 }
