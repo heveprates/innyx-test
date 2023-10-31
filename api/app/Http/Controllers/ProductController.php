@@ -21,14 +21,15 @@ class ProductController extends Controller
      */
     public function store(StoreProductRequest $request)
     {
+        $requestInput = $request->validated();
+        $path = null;
         if ($request->hasFile('image')) {
+            $publicPath = 'images/products';
             $image = $request->file('image');
-            $path = $image->store('images', 'public');
-            $request->merge(['image' => $path]);
+            $image->store(options: public_path($publicPath));
+            $path = $publicPath . '/' . $image->hashName();
         }
-
-        $product = Product::create($request->validated());
-
+        $product = Product::create([...$requestInput, 'image' => $path]);
         if (!$product) {
             return response()->json(['message' => 'Erro ao criar um produto'], 500);
         }
