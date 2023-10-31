@@ -1,5 +1,6 @@
 <template>
-  <HelloWorld />
+  <!-- <HelloWorld /> -->
+  <h2>ola</h2>
 </template>
 
 <script lang="ts" setup>
