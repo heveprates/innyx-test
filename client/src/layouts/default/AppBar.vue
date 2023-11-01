@@ -5,23 +5,14 @@
       Teste INNYX
     </template>
     <template v-slot:extension>
-      <v-tabs
-        fixed-tabs
-        align-tabs="title"
-      >
-        <v-tab to="/product">
-          Product
-        </v-tab>
-        <v-tab to="/category">
-          Category
-        </v-tab>
-      </v-tabs>
+      <div class="flex-0-0-100">
+        <v-tabs fixed-tabs align-tabs="start">
+          <v-tab to="/product"> Product </v-tab>
+          <v-tab to="/category"> Category </v-tab>
+        </v-tabs>
+      </div>
     </template>
   </v-app-bar>
 </template>
 
-<script lang="ts" setup>
-  import { ref } from 'vue'
-
-  // const tab = ref<string|null>(null)
-</script>
+<script lang="ts" setup></script>
