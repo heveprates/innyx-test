@@ -1,21 +1,8 @@
 <script setup lang="ts">
 import { ref, computed } from "vue";
-import { Mask } from "maska";
-import { format, isMatch, parse } from "date-fns";
 import type { ExtractPropTypes } from "vue";
 import type { VTextField } from "vuetify/components";
 import type { VDatePicker } from "vuetify/labs/VDatePicker";
-
-type PropsVTextField = Exclude<
-  InstanceType<typeof VTextField>["$props"],
-  | "appendInnerIcon"
-  | "v-slot:append-inner"
-  | "#append-inner"
-  | "modelValue"
-  | "onUpdate:modelValue"
->;
-
-type PropsVDatePicker = InstanceType<typeof VDatePicker>["$props"];
 
 const props = defineProps<{
   textField?: ExtractPropTypes<PropsVTextField>;
@@ -26,37 +13,24 @@ const emits = defineEmits<{
   (event: "update:modelValue", input: Date | null): void;
 }>();
 
-const mask = new Mask({
-  mask: "##/##/####",
-  tokens: {
-    A: { pattern: /[A-Z]/, transform: (chr: string) => chr.toUpperCase() },
-  },
-  eager: true,
-});
-
 const menuOpen = ref(false);
 const datePickerValue = ref<Date[]>([]);
 const textFieldValue = ref("");
 
-const DatePatter = "dd/MM/yyyy";
-
 const textFieldValueModel = computed<string>({
   get() {
     if (props.modelValue) {
-      return format(props.modelValue, DatePatter);
+      return formatDate(props.modelValue);
     }
     return mask.masked(textFieldValue.value).slice(0, 10);
   },
   set(value: string): void {
-    if (isMatch(value, DatePatter) && value.length === 10) {
-      emits(
-        "update:modelValue",
-        parse(value, DatePatter, new Date(Date.UTC(0)))
-      );
+    if (isValidDate(value)) {
+      emits("update:modelValue", makeDate(value));
     } else {
       emits("update:modelValue", null);
     }
-    textFieldValue.value = mask.unmasked(value);
+    textFieldValue.value = mask.unmasked(value).slice(0, 10);
   },
 });
 const datePickerValueModel = computed<Date[]>({
@@ -71,13 +45,52 @@ const datePickerValueModel = computed<Date[]>({
       value = [value];
     }
     if (value.length) {
-      emits("update:modelValue", value[0]);
+      emits("update:modelValue", makeDate(formatDate(value[0])));
     } else {
       emits("update:modelValue", null);
     }
     datePickerValue.value = value;
   },
 });
+</script>
+<script lang="ts">
+import { Mask } from "maska";
+import { format, isMatch, parse } from "date-fns";
+
+const DatePatter = "dd/MM/yyyy";
+const mask = new Mask({
+  mask: "##/##/####",
+  tokens: {
+    A: { pattern: /[A-Z]/, transform: (chr: string) => chr.toUpperCase() },
+  },
+  eager: true,
+});
+
+function formatDate(dateInput: Date): string {
+  return format(dateInput, DatePatter);
+}
+
+function isValidDate(value: string): boolean {
+  return isMatch(value, DatePatter) && value.length === 10;
+}
+
+function makeDate(value: string): Date {
+  const date = parse(value, DatePatter, new Date());
+  return new Date(
+    Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate())
+  );
+}
+
+type PropsVTextField = Exclude<
+  InstanceType<typeof VTextField>["$props"],
+  | "appendInnerIcon"
+  | "v-slot:append-inner"
+  | "#append-inner"
+  | "modelValue"
+  | "onUpdate:modelValue"
+>;
+
+type PropsVDatePicker = InstanceType<typeof VDatePicker>["$props"];
 </script>
 
 <template>
