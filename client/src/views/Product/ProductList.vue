@@ -1,12 +1,9 @@
 <template>
   <v-container fluid>
-    <PaginatedView>
-      <CardView />
-    </PaginatedView>
+    <ProductListPaginatedView />
   </v-container>
 </template>
 
 <script lang="ts" setup>
-import PaginatedView from "@/components/PaginatedView.vue";
-import CardView from "@/components/CadView.vue";
+import ProductListPaginatedView from "@/components/Products/ProductListPaginatedView.vue";
 </script>
