@@ -99,7 +99,7 @@ type PropsVDatePicker = InstanceType<typeof VDatePicker>["$props"];
     v-model="textFieldValueModel"
   >
     <template #append-inner>
-      <v-btn icon="mdi-map-marker">
+      <span aria-label="abrir" role="button">
         <v-icon>mdi-calendar</v-icon>
         <v-menu
           v-model="menuOpen"
@@ -119,7 +119,7 @@ type PropsVDatePicker = InstanceType<typeof VDatePicker>["$props"];
             </v-date-picker>
           </v-locale-provider>
         </v-menu>
-      </v-btn>
+      </span>
     </template>
   </v-text-field>
 </template>
