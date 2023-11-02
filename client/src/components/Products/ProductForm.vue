@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { useField, useForm } from "vee-validate";
+import { useField } from "vee-validate";
+import * as yup from "yup";
 import { useCurrencyInput } from "vue-currency-input";
 
 import HInputDatepicker from "@/components/HInputDatepicker.vue";
@@ -8,23 +9,50 @@ defineProps<{
   categoryList: { id: string; name: string }[];
 }>();
 
-const a = [
-  { id: "1", name: "Quarto" },
-  { id: "2", name: "Cozinha" },
-  { id: "3", name: "Sala" },
-  { id: "4", name: "Banheiro" },
-];
-
 const { inputRef, formattedValue } = useCurrencyInput(currencyConfig);
-const name = useField<ProductFormProps["name"]>("name");
-const description = useField<ProductFormProps["description"]>("description");
-const price = useField<ProductFormProps["price"]>("price");
-const expirationDate =
-  useField<ProductFormProps["expirationDate"]>("expirationDate");
-const categoryId = useField<ProductFormProps["categoryId"]>("categoryId");
-const image = useField<ProductFormProps["image"]>("image");
+const name = useField<ProductFormProps["name"]>(
+  "name",
+  yup.string().required().max(50)
+);
+const description = useField<ProductFormProps["description"]>(
+  "description",
+  yup.string().required().max(200)
+);
+const price = useField<ProductFormProps["price"]>(
+  "price",
+  yup.number().required().moreThan(0)
+);
+const expirationDate = useField<ProductFormProps["expirationDate"]>(
+  "expirationDate",
+  yup.date().required().min(new Date())
+);
+const categoryId = useField<ProductFormProps["categoryId"]>(
+  "categoryId",
+  yup.string().required()
+);
+const image = useField<ProductFormProps["image"]>(
+  "image",
+  yup
+    .mixed<File>()
+    .required()
+    .test({
+      message: `A imagem deve ter no máximo ${MAX_FILE_SIZE / 1024 / 1024}MB`,
+      test: (file) => {
+        const isValid = file?.size < MAX_FILE_SIZE;
+        return isValid;
+      },
+    })
+    .test({
+      message: `O tipo de arquivo não é suportado, por favor envie uma imagem`,
+      test: (file) => {
+        return file.type.startsWith("image/");
+      },
+    })
+);
 </script>
 <script lang="ts">
+const SIX_MEGA_BYTES = 1024 * 1024 * 6;
+const MAX_FILE_SIZE = SIX_MEGA_BYTES;
 const currencyConfig = {
   currency: "BRL",
   hideCurrencySymbolOnFocus: false,
@@ -86,7 +114,7 @@ export type ProductFormProps = {
 
       <v-select
         v-model="categoryId.value.value"
-        :items="a"
+        :items="$props.categoryList"
         item-title="name"
         item-value="id"
         :error-messages="categoryId.errorMessage.value"
