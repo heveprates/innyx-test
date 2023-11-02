@@ -1,15 +1,18 @@
 <template>
   <v-row justify="end">
-    <v-col cols="4">
-      <v-text-field
-        density="compact"
-        variant="solo"
-        label="Pesquisar"
-        prepend-inner-icon="mdi-magnify"
-        single-line
-        hide-details
-        clearable
-      ></v-text-field>
+    <v-col sm="6" md="4" lg="3">
+      <form @submit.prevent="() => $props.filter.changeSearch(searchInput)">
+        <v-text-field
+          density="compact"
+          variant="solo"
+          label="Pesquisar"
+          prepend-inner-icon="mdi-magnify"
+          single-line
+          hide-details
+          clearable
+          v-model="searchInput"
+        ></v-text-field>
+      </form>
     </v-col>
     <v-col cols="auto">
       <v-btn icon="mdi-plus" to="/product/add"></v-btn>
@@ -20,20 +23,41 @@
       <slot />
     </v-col>
   </v-row>
-  <v-row justify="space-between">
-    <v-col cols="4" class="d-flex align-center" height="100">
-      <strong> Mostrando 5 de 25 resultados </strong>
+  <v-row justify="space-between" align="center">
+    <v-col cols="6" md="auto" height="100">
+      <strong>
+        Mostrando {{ $props.filter.shown }} de
+        {{ $props.filter.total }} resultados
+      </strong>
     </v-col>
-    <v-col cols="6">
-      <v-pagination v-model="page" :length="25" rounded="circle"></v-pagination>
+    <v-col cols="6" md="auto">
+      <v-pagination
+        :model-value="$props.pagination.current"
+        :length="$props.pagination.total"
+        @update:model-value="($event) => $props.pagination.changePage($event)"
+        rounded="circle"
+      ></v-pagination>
     </v-col>
   </v-row>
 </template>
 
 <script lang="ts" setup>
-const page = 1;
+import { ref } from "vue";
 
-function add() {
-  console.log("Hello World");
-}
+const searchInput = ref("");
+
+defineProps<{
+  pagination: {
+    current: number;
+    total: number;
+    changePage: (page: number) => void;
+  };
+  filter: {
+    search: string;
+    changeSearch: (search: string) => void;
+    total: number;
+    shown: number;
+  };
+  loading: boolean;
+}>();
 </script>

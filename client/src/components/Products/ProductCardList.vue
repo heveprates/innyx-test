@@ -17,12 +17,12 @@
         >
         </v-img>
         <v-card-title>{{ product.name }}</v-card-title>
-        <v-card-subtitle class="pt-1">
+        <v-card-subtitle class="mt-n2">
           {{ product.description }}
         </v-card-subtitle>
 
         <v-card-text>
-          <div class="text-h6">{{ printMoney(product.price) }}</div>
+          <div class="text-subtitle-1">{{ printMoney(product.price) }}</div>
 
           <div class="text-grey text-caption">
             Válido até {{ printDate(product.valid) }}
@@ -32,7 +32,9 @@
         <v-divider></v-divider>
 
         <v-card-actions>
-          <v-btn color="green"> Editar </v-btn>
+          <v-btn color="green" :to="'/product/edit/' + product.id">
+            Editar
+          </v-btn>
 
           <v-btn color="red"> Excluir </v-btn>
         </v-card-actions>
@@ -42,18 +44,9 @@
 </template>
 
 <script lang="ts" setup>
-import { ref } from "vue";
-const productsList = ref<Product[]>([
-  {
-    id: 1,
-    name: "Cama",
-    description: "Excelente para dormir!",
-    price: 2300,
-    valid: new Date("2024-01-24"),
-    imageUrl:
-      "https://media.istockphoto.com/id/538828557/pt/foto/bela-apartamento-fornecidas.jpg?s=1024x1024&w=is&k=20&c=T-0TxtPgOm5EV2lcAGULp_n1dsTbinU6BtCjcH2VlCo=",
-  },
-]);
+defineProps<{
+  productsList: Product[];
+}>();
 
 const printMoney = (value: number) => {
   return value.toLocaleString("pt-BR", {
@@ -68,7 +61,7 @@ const printDate = (date: Date) => {
 </script>
 <script lang="ts">
 export type Product = {
-  id: number;
+  id: string;
   name: string;
   description: string;
   price: number;
