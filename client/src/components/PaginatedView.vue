@@ -15,7 +15,7 @@
       </form>
     </v-col>
     <v-col cols="auto">
-      <v-btn icon="mdi-plus" to="/product/add"></v-btn>
+      <slot name="actions" />
     </v-col>
   </v-row>
   <v-row>

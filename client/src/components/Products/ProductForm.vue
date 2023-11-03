@@ -2,6 +2,7 @@
 import { useField } from "vee-validate";
 import * as yup from "yup";
 import { useCurrencyInput } from "vue-currency-input";
+import { defineProps, watch, onMounted } from "vue";
 
 import HInputDatepicker from "@/components/HInputDatepicker.vue";
 
@@ -9,7 +10,9 @@ defineProps<{
   categoryList: { id: string; name: string }[];
 }>();
 
-const { inputRef, formattedValue } = useCurrencyInput(currencyConfig);
+const { inputRef, formattedValue, numberValue, setValue } =
+  useCurrencyInput(currencyConfig);
+
 const name = useField<ProductFormProps["name"]>(
   "name",
   yup.string().required().max(50)
@@ -49,6 +52,30 @@ const image = useField<ProductFormProps["image"]>(
       },
     })
 );
+
+watch(numberValue, (newValue) => {
+  // sync it with vee-validate, this will trigger validation
+  price.handleChange(newValue);
+});
+
+onMounted(() => {
+  // Currently there is a bug where you have to wait until after mount for useCurrencyInput to properly set the value
+  setTimeout(() => {
+    // sets the initial value if provided
+    if (price.value.value) {
+      setValue(price.value.value);
+    }
+  }, 300);
+});
+
+const values = {
+  name: name.value,
+  desc: description.value,
+  price: price.value,
+  expirationDate: expirationDate.value,
+  categoryId: categoryId.value,
+  image: image.value,
+};
 </script>
 <script lang="ts">
 const SIX_MEGA_BYTES = 1024 * 1024 * 6;
@@ -90,7 +117,7 @@ export type ProductFormProps = {
 
       <v-text-field
         label="Preço"
-        v-model="formattedValue"
+        :model-value="formattedValue"
         :error-messages="price.errorMessage.value"
         ref="inputRef"
       />

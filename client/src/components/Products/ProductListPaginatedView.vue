@@ -40,5 +40,8 @@ const productsList = ref<Product[]>(
     }"
   >
     <ProductCardList :productsList="productsList" />
+    <template #actions>
+      <v-btn icon="mdi-plus" to="/product/add"></v-btn>
+    </template>
   </PaginatedView>
 </template>
