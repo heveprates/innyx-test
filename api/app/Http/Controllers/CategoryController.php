@@ -13,15 +13,7 @@ class CategoryController extends Controller
      */
     public function index()
     {
-        //
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
+        return response()->json(Category::all());
     }
 
     /**
@@ -29,7 +21,12 @@ class CategoryController extends Controller
      */
     public function store(StoreCategoryRequest $request)
     {
-        //
+        $requestInput = $request->validated();
+        $category = Category::create($requestInput);
+        if (!$category) {
+            return response()->json(['message' => 'Erro ao criar uma categoria'], 500);
+        }
+        return response()->json($category, 201);
     }
 
     /**
@@ -37,15 +34,11 @@ class CategoryController extends Controller
      */
     public function show(Category $category)
     {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Category $category)
-    {
-        //
+        $category = Category::find($category->id);
+        if (!$category) {
+            return response()->json(['message' => 'Categoria não encontrada'], 404);
+        }
+        return response()->json($category, 201);
     }
 
     /**
@@ -53,7 +46,12 @@ class CategoryController extends Controller
      */
     public function update(UpdateCategoryRequest $request, Category $category)
     {
-        //
+        $category = Category::find($category->id);
+        if (!$category) {
+            return response()->json(['message' => 'Categoria não encontrada'], 404);
+        }
+        $category->update($request->validated());
+        return response()->json($category, 201);
     }
 
     /**
@@ -61,6 +59,11 @@ class CategoryController extends Controller
      */
     public function destroy(Category $category)
     {
-        //
+        $category = Category::find($category->id);
+        if (!$category) {
+            return response()->json(['message' => 'Categoria não encontrada'], 404);
+        }
+        $category->delete();
+        return response()->json(['message' => 'Categoria deletada com sucesso'], 200);
     }
 }
