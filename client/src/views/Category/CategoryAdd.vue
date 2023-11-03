@@ -1,5 +1,7 @@
 <template>
-  <h2>Category Add</h2>
+  <CategoryAddForm />
 </template>
 
-<script lang="ts" setup></script>
+<script lang="ts" setup>
+import CategoryAddForm from "@/components/Category/CategoryAddForm.vue";
+</script>
