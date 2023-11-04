@@ -9,6 +9,8 @@ interface CategoryServiceInterface
 {
     public function paginate(int $currentPage, int $perPage = 10, string $search = null);
 
+    public function all();
+
     public function findById(int $id);
 
     public function create(CategoryCreateDTO $productCreateDTO);
