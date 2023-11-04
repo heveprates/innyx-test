@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Contracts\Services\ProductServiceInterface;
+use App\Services\ProductService;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
