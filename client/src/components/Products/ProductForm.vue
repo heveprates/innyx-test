@@ -10,6 +10,17 @@ defineProps<{
   categoryList: { id: string; name: string }[];
 }>();
 
+defineExpose({
+  getData: (): ProductFormProps => ({
+    name: name.value.value,
+    description: description.value.value,
+    price: price.value.value,
+    expirationDate: expirationDate.value.value,
+    categoryId: categoryId.value.value,
+    image: image.value.value[0],
+  }),
+});
+
 const { inputRef, formattedValue, numberValue, setValue } =
   useCurrencyInput(currencyConfig);
 
@@ -33,22 +44,28 @@ const categoryId = useField<ProductFormProps["categoryId"]>(
   "categoryId",
   yup.string().required()
 );
-const image = useField<ProductFormProps["image"]>(
+const image = useField<ProductFormProps["image"][]>(
   "image",
   yup
-    .mixed<File>()
+    .mixed<ProductFormProps["image"][]>()
     .required()
     .test({
       message: `A imagem deve ter no máximo ${MAX_FILE_SIZE / 1024 / 1024}MB`,
       test: (file) => {
-        const isValid = file?.size < MAX_FILE_SIZE;
+        if (file.length == 0) {
+          return false;
+        }
+        const isValid = file[0]?.size < MAX_FILE_SIZE;
         return isValid;
       },
     })
     .test({
       message: `O tipo de arquivo não é suportado, por favor envie uma imagem`,
       test: (file) => {
-        return file.type.startsWith("image/");
+        if (file.length == 0) {
+          return false;
+        }
+        return file[0]?.type.startsWith("image/");
       },
     })
 );
@@ -67,15 +84,6 @@ onMounted(() => {
     }
   }, 300);
 });
-
-const values = {
-  name: name.value,
-  desc: description.value,
-  price: price.value,
-  expirationDate: expirationDate.value,
-  categoryId: categoryId.value,
-  image: image.value,
-};
 </script>
 <script lang="ts">
 const SIX_MEGA_BYTES = 1024 * 1024 * 6;
@@ -134,6 +142,7 @@ export type ProductFormProps = {
 
       <v-file-input
         label="Imagem do produto"
+        v-model="image.value.value"
         prepend-icon=""
         append-inner-icon="mdi-paperclip"
         :error-messages="image.errorMessage.value"

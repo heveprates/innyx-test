@@ -1,11 +1,39 @@
 <script setup lang="ts">
+import { ref } from "vue";
 import ProductForm, {
   ProductFormProps,
 } from "@/components/Products/ProductForm.vue";
+import { ProductAPI, ProductNotFoundError } from "@/services/productAPI";
+
+const formRef = ref<InstanceType<typeof ProductForm> | null>(null);
+
+const getFormData = (): ProductFormProps => {
+  if (!formRef.value) {
+    throw new Error("Form ref is null");
+  }
+  return formRef.value.getData();
+};
 
 const handleSubmit = () => {
-  // let values: ProductFormProps;
-  // alert(JSON.stringify(values, null, 2));
+  const values = getFormData();
+  ProductAPI.fetchStoreProduct({
+    name: values.name,
+    description: values.description,
+    price: values.price,
+    valid: values.expirationDate,
+    category: values.categoryId,
+    imageFile: values.image,
+  })
+    .then((product) => {
+      console.log(product);
+    })
+    .catch((error) => {
+      if (error instanceof ProductNotFoundError) {
+        console.log(ProductNotFoundError);
+      } else {
+        console.log("Error");
+      }
+    });
 };
 
 const handleReset = () => {};
@@ -17,9 +45,10 @@ const handleGoBack = () => {
 <template>
   <form @submit.prevent="() => handleSubmit()" class="mt-8">
     <ProductForm
+      ref="formRef"
       :categoryList="[
         { id: '1', name: 'Quarto' },
-        { id: '2', name: 'Cozinha' },
+        { id: '16', name: 'Cozinha' },
         { id: '3', name: 'Sala' },
         { id: '4', name: 'Banheiro' },
       ]"

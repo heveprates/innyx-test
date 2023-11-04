@@ -1,21 +1,33 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
 import ProductCardList, { Product } from "./ProductCardList.vue";
 import PaginatedView from "@/components/PaginatedView.vue";
+import { ProductAPI, ProductNotFoundError } from "@/services/productAPI";
 
 const currentPage = ref(1);
 const totalPage = ref(5);
 const filterSearch = ref("");
 const filterShown = ref(5);
 const filterTotal = ref(25);
+const productsList = ref<Product[]>([]);
 
-const productsList = ref<Product[]>(
-  ProductAPI.fetchProducts().catch((error) => {
-    if (error instanceof ProductNotFoundError) {
-      console.log("Product not found");
-    }
-  })
-);
+async function fetchProducts() {
+  ProductAPI.fetchProducts()
+    .then((products) => {
+      productsList.value = products;
+    })
+    .catch((error) => {
+      if (error instanceof ProductNotFoundError) {
+        console.log(ProductNotFoundError);
+      } else {
+        console.log("Error");
+      }
+    });
+}
+
+onMounted(() => {
+  fetchProducts();
+});
 </script>
 
 <template>
