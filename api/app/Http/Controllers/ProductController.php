@@ -2,18 +2,31 @@
 
 namespace App\Http\Controllers;
 
+use App\Contracts\Services\ProductServiceInterface;
+use App\DataTransferObjects\Product\ProductCreateDTO;
+use App\DataTransferObjects\Product\ProductUpdateDTO;
 use App\Http\Requests\StoreProductRequest;
 use App\Http\Requests\UpdateProductRequest;
+use App\Http\Resources\ProductCollectionResource;
+use App\Http\Resources\ProductResource;
 use App\Models\Product;
+use Illuminate\Support\Facades\App;
 
 class ProductController extends Controller
 {
+    public function __construct(
+        private readonly ProductServiceInterface $productService
+    ) {
+    }
+
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        return response()->json(Product::all());
+        return new ProductCollectionResource(
+            $this->productService->paginate(1, search: 'KIN')
+        );
     }
 
     /**
@@ -21,31 +34,21 @@ class ProductController extends Controller
      */
     public function store(StoreProductRequest $request)
     {
-        $requestInput = $request->validated();
-        $path = null;
-        if ($request->hasFile('image')) {
-            $publicPath = 'images/products';
-            $image = $request->file('image');
-            $image->store(options: public_path($publicPath));
-            $path = $publicPath . '/' . $image->hashName();
-        }
-        $product = Product::create([...$requestInput, 'image' => $path]);
-        if (!$product) {
-            return response()->json(['message' => 'Erro ao criar um produto'], 500);
-        }
-        return response()->json($product, 201);
+        $product = $this->productService->create(ProductCreateDTO::fromRequest($request));
+        return new ProductResource($product);
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(Product $product)
+    public function show(string $id)
     {
-        $product = Product::find($product->id);
-        if (!$product) {
+        try {
+            $product = $this->productService->findById($id);
+            return new ProductResource($product);
+        } catch (\Throwable) {
             return response()->json(['message' => 'Produto não encontrado'], 404);
         }
-        return response()->json($product, 201);
     }
 
     /**
@@ -53,32 +56,16 @@ class ProductController extends Controller
      */
     public function update(UpdateProductRequest $request, Product $product)
     {
-        $product = Product::find($product->id);
-
-        if (!$product) {
-            return response()->json(['message' => 'Produto não encontrado'], 404);
-        }
-
-        $path = $product->image;
-        if ($request->hasFile('image')) {
-            $image = $request->file('image');
-            $path = $image->store('images', 'public');
-            $request->merge(['image' => $path]);
-        }
-        $product->update($request->validated());
-        return response()->json($product, 201);
+        $product = $this->productService->updateById($product->id, ProductUpdateDTO::fromRequest($request));
+        return new ProductResource($product);
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Product $product)
+    public function destroy(string $id)
     {
-        $product = Product::find($product->id);
-        if (!$product) {
-            return response()->json(['message' => 'Produto não encontrado'], 404);
-        }
-        $product->delete();
-        return response()->json(['message' => 'Produto deletado com sucesso'], 200);
+        $this->productService->deleteById($id);
+        return response()->json(status: 201);
     }
 }

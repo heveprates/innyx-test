@@ -5,31 +5,81 @@ namespace App\Services;
 use App\Contracts\Services\ProductServiceInterface;
 use App\DataTransferObjects\Product\ProductCreateDTO;
 use App\DataTransferObjects\Product\ProductUpdateDTO;
+use App\Models\Product;
+use Illuminate\Http\UploadedFile;
 
 class ProductService implements ProductServiceInterface
 {
 
-    public function paginate(int $currentPage, int $perPage = 10, string $search = null)
-    {
-        return [];
+    public function __construct(
+        private readonly Product $productModel
+    ) {
     }
 
-    public function findById(int $id)
+    public function paginate(int $currentPage, int $perPage = 12, string $search = null)
     {
-        // TODO: Implement findById() method.
+        $query = $this->productModel->newQuery();
+        if ($search) {
+            $query->where('name', 'like', "%{$search}%")
+                ->orWhere('description', 'like', "%{$search}%");
+        }
+        return $query->paginate(perPage: $perPage, page: $currentPage);
+    }
+
+    public function findById(int $id): Product
+    {
+        return $this->productModel->newQuery()->findOrFail($id);
     }
 
     public function create(ProductCreateDTO $productCreateDTO)
     {
-        // TODO: Implement create() method.
+        $requestInput = [
+            'name' => $productCreateDTO->name,
+            'description' => $productCreateDTO->description,
+            'price' => $productCreateDTO->price,
+            'date_validity' => $productCreateDTO->dateValidity,
+            'image' => $this->uploadImage($productCreateDTO->image),
+            'category_id' => $productCreateDTO->categoryId,
+        ];
+        return $this->productModel->newQuery()->create($requestInput);
     }
 
-    public function updateById(int $id, ProductUpdateDTO $productUpdateDTO) {
-        // TODO: Implement updateById() method.
+    public function updateById(int $id, ProductUpdateDTO $productUpdateDTO)
+    {
+        $product = $this->findById($id);
+        $requestInput = [];
+        if ($productUpdateDTO->name !== null) {
+            $requestInput['name'] = $productUpdateDTO->name;
+        }
+        if ($productUpdateDTO->description !== null) {
+            $requestInput['description'] = $productUpdateDTO->description;
+        }
+        if ($productUpdateDTO->price !== null) {
+            $requestInput['price'] = $productUpdateDTO->price;
+        }
+        if ($productUpdateDTO->dateValidity !== null) {
+            $requestInput['date_validity'] = $productUpdateDTO->dateValidity;
+        }
+        if ($productUpdateDTO->image !== null) {
+            $requestInput['image'] = $this->uploadImage($productUpdateDTO->image);
+        }
+        if ($productUpdateDTO->categoryId !== null) {
+            $requestInput['category_id'] = $productUpdateDTO->categoryId;
+        }
+        return $product->update($requestInput);
     }
 
     public function deleteById(int $id)
     {
-        // TODO: Implement deleteById() method.
+        $product = $this->findById($id);
+        $product->delete();
+    }
+
+    private function uploadImage(UploadedFile $image): string
+    {
+        $publicPath = 'images/products';
+        $fileName = $image->hashName();
+        $image->move(public_path($publicPath), $fileName);
+        return "$publicPath/$fileName";
     }
 }
