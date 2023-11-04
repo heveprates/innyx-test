@@ -20,7 +20,13 @@
   </v-row>
   <v-row>
     <v-col cols="12">
-      <slot />
+      <div v-if="$props.loading" class="text-center">
+        <v-progress-circular
+          indeterminate
+          color="primary"
+        ></v-progress-circular>
+      </div>
+      <slot v-else />
     </v-col>
   </v-row>
   <v-row justify="space-between" align="center">
