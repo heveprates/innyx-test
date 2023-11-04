@@ -3,14 +3,15 @@
 namespace App\Services;
 
 use App\Contracts\Services\ProductServiceInterface;
-use Psr\Http\Message\UploadedFileInterface;
+use App\DataTransferObjects\Product\ProductCreateDTO;
+use App\DataTransferObjects\Product\ProductUpdateDTO;
 
 class ProductService implements ProductServiceInterface
 {
 
     public function paginate(int $currentPage, int $perPage = 10, string $search = null)
     {
-        // TODO: Implement paginate() method.
+        return [];
     }
 
     public function findById(int $id)
@@ -18,26 +19,12 @@ class ProductService implements ProductServiceInterface
         // TODO: Implement findById() method.
     }
 
-    public function create(
-        string $name,
-        string $description,
-        float $price,
-        \DateTimeInterface $dateValidity,
-        UploadedFileInterface $image,
-        int $categoryId
-    ) {
+    public function create(ProductCreateDTO $productCreateDTO)
+    {
         // TODO: Implement create() method.
     }
 
-    public function updateById(
-        int $id,
-        string $name = null,
-        string $description = null,
-        float $price = null,
-        \DateTimeInterface $dateValidity = null,
-        UploadedFileInterface $image = null,
-        int $categoryId = null,
-    ) {
+    public function updateById(int $id, ProductUpdateDTO $productUpdateDTO) {
         // TODO: Implement updateById() method.
     }
 

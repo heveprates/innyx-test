@@ -2,7 +2,8 @@
 
 namespace App\Contracts\Services;
 
-use Psr\Http\Message\UploadedFileInterface;
+use App\DataTransferObjects\Product\ProductCreateDTO;
+use App\DataTransferObjects\Product\ProductUpdateDTO;
 
 interface ProductServiceInterface
 {
@@ -10,24 +11,9 @@ interface ProductServiceInterface
 
     public function findById(int $id);
 
-    public function create(
-        string $name,
-        string $description,
-        float $price,
-        \DateTimeInterface $dateValidity,
-        UploadedFileInterface $image,
-        int $categoryId
-    );
+    public function create(ProductCreateDTO $productCreateDTO);
 
-    public function updateById(
-        int $id,
-        string $name = null,
-        string $description = null,
-        float $price = null,
-        \DateTimeInterface $dateValidity = null,
-        UploadedFileInterface $image = null,
-        int $categoryId = null,
-    );
+    public function updateById(int $id, ProductUpdateDTO $productUpdateDTO);
 
     public function deleteById(int $id);
 }
