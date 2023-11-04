@@ -4,6 +4,7 @@ import ProductCardList, { Product } from "./ProductCardList.vue";
 import PaginatedView from "@/components/PaginatedView.vue";
 import { ProductAPI, ProductNotFoundError } from "@/services/productAPI";
 
+const loadingData = ref(false);
 const currentPage = ref(1);
 const totalPage = ref(5);
 const filterSearch = ref("");
@@ -11,12 +12,19 @@ const filterShown = ref(5);
 const filterTotal = ref(25);
 const productsList = ref<Product[]>([]);
 
-async function fetchProducts() {
-  ProductAPI.fetchProducts()
-    .then((products) => {
-      productsList.value = products;
+function fetchProducts() {
+  loadingData.value = true;
+  ProductAPI.fetchProducts(currentPage.value, filterSearch.value)
+    .then((response) => {
+      loadingData.value = false;
+      productsList.value = response.data;
+      currentPage.value = response.pagination.current;
+      totalPage.value = response.pagination.last;
+      filterTotal.value = response.pagination.total;
+      filterShown.value = response.data.length;
     })
     .catch((error) => {
+      loadingData.value = false;
       if (error instanceof ProductNotFoundError) {
         console.log(ProductNotFoundError);
       } else {
@@ -28,21 +36,29 @@ async function fetchProducts() {
 onMounted(() => {
   fetchProducts();
 });
+
+function changeSearchHandle(search: string) {
+  filterSearch.value = search;
+  fetchProducts();
+}
+
+function changePageHandle(page: number) {
+  currentPage.value = page;
+  fetchProducts();
+}
 </script>
 
 <template>
   <PaginatedView
-    :loading="false"
+    :loading="loadingData"
     :filter="{
-      changeSearch: () => {},
+      changeSearch: changeSearchHandle,
       search: filterSearch,
       shown: filterShown,
       total: filterTotal,
     }"
     :pagination="{
-      changePage: (page: number) => {
-        currentPage = page;
-      },
+      changePage: changePageHandle,
       current: currentPage,
       total: totalPage,
     }"
