@@ -10,6 +10,7 @@ use App\Http\Requests\UpdateProductRequest;
 use App\Http\Resources\ProductCollectionResource;
 use App\Http\Resources\ProductResource;
 use App\Models\Product;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
 
 class ProductController extends Controller
@@ -22,10 +23,10 @@ class ProductController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
         return new ProductCollectionResource(
-            $this->productService->paginate(1, search: 'KIN')
+            $this->productService->paginate($request->input('page', 1), search: $request->input('search'))
         );
     }
 
