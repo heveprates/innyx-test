@@ -2,18 +2,31 @@
 
 namespace App\Http\Controllers;
 
+use App\Contracts\Services\CategoryServiceInterface;
+use App\DataTransferObjects\Category\CategoryCreateDTO;
+use App\DataTransferObjects\Category\CategoryUpdateDTO;
 use App\Http\Requests\StoreCategoryRequest;
 use App\Http\Requests\UpdateCategoryRequest;
+use App\Http\Resources\CategoryCollectionResource;
+use App\Http\Resources\CategoryResource;
 use App\Models\Category;
+use Illuminate\Http\Request;
 
 class CategoryController extends Controller
 {
+    public function __construct(
+        private readonly CategoryServiceInterface $categoryService
+    ) {
+    }
+
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        return response()->json(Category::all());
+        return new CategoryCollectionResource(
+            $this->categoryService->paginate($request->input('page', 1), search: $request->input('search'))
+        );
     }
 
     /**
@@ -21,24 +34,21 @@ class CategoryController extends Controller
      */
     public function store(StoreCategoryRequest $request)
     {
-        $requestInput = $request->validated();
-        $category = Category::create($requestInput);
-        if (!$category) {
-            return response()->json(['message' => 'Erro ao criar uma categoria'], 500);
-        }
-        return response()->json($category, 201);
+        $category = $this->categoryService->create(CategoryCreateDTO::fromRequest($request));
+        return new CategoryResource($category);
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(Category $category)
+    public function show(string $id)
     {
-        $category = Category::find($category->id);
-        if (!$category) {
+        try {
+            $category = $this->categoryService->findById($id);
+            return new CategoryResource($category);
+        } catch (\Throwable) {
             return response()->json(['message' => 'Categoria não encontrada'], 404);
         }
-        return response()->json($category, 201);
     }
 
     /**
@@ -46,24 +56,16 @@ class CategoryController extends Controller
      */
     public function update(UpdateCategoryRequest $request, Category $category)
     {
-        $category = Category::find($category->id);
-        if (!$category) {
-            return response()->json(['message' => 'Categoria não encontrada'], 404);
-        }
-        $category->update($request->validated());
-        return response()->json($category, 201);
+        $category = $this->categoryService->updateById($category->id, CategoryUpdateDTO::fromRequest($request));
+        return new CategoryResource($category);
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Category $category)
+    public function destroy(string $id)
     {
-        $category = Category::find($category->id);
-        if (!$category) {
-            return response()->json(['message' => 'Categoria não encontrada'], 404);
-        }
-        $category->delete();
-        return response()->json(['message' => 'Categoria deletada com sucesso'], 200);
+        $this->categoryService->deleteById($id);
+        return response()->json(status: 201);
     }
 }
