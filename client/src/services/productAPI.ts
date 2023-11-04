@@ -1,19 +1,34 @@
 import { APIAuthInstance } from "./serviceAPI";
 
 export class ProductAPI {
-  static async fetchProducts(): Promise<Product[]> {
+  static async fetchProducts(
+    page: number,
+    search: string
+  ): Promise<ProductFetchResponse> {
     try {
-      const { data } = await APIAuthInstance.get<ProductAPIType[]>(
-        `/api/products`
-      );
-      return data.map((product: ProductAPIType) => ({
-        id: String(product.id),
-        name: product.name,
-        description: product.description,
-        price: product.price,
-        valid: new Date(product.valid),
-        imageUrl: product.imageUrl,
-      }));
+      const {
+        data: { data, meta },
+      } = await APIAuthInstance.get<ProductAPIFetchData>(`/api/products`, {
+        params: {
+          page,
+          search: search || undefined,
+        },
+      });
+      return {
+        data: data.map((product: ProductAPIType) => ({
+          id: String(product.id),
+          name: product.name,
+          description: product.description,
+          price: product.price,
+          valid: new Date(product.valid),
+          imageUrl: product.imageUrl,
+        })),
+        pagination: {
+          current: meta.current_page,
+          last: meta.last_page,
+          total: meta.total,
+        },
+      };
     } catch (error: any) {
       if (error?.response?.status) throw new ProductNotFoundError();
       throw error;
@@ -100,6 +115,25 @@ export class ProductNotFoundError extends Error {
     super(`Nenhum Produto encontrado`);
   }
 }
+
+type ProductAPIFetchData = {
+  data: ProductAPIType[];
+  meta: {
+    current_page: number;
+    last_page: number;
+    per_page: number;
+    total: number;
+  };
+};
+
+type ProductFetchResponse = {
+  data: Product[];
+  pagination: {
+    current: number;
+    last: number;
+    total: number;
+  };
+};
 
 type ProductAPIType = {
   id: number;
