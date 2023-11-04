@@ -6,6 +6,10 @@ use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
 {
+    public array $bindings = [
+        ProductServiceInterface::class => ProductService::class,
+    ];
+
     /**
      * Register any application services.
      */
