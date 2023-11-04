@@ -51,4 +51,9 @@ class CategoryService implements CategoryServiceInterface
         $category = $this->findById($id);
         return $category->delete();
     }
+
+    public function all()
+    {
+        return $this->categoryModel->newQuery()->get();
+    }
 }
