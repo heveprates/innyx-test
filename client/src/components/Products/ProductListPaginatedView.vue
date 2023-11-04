@@ -10,15 +10,11 @@ const filterShown = ref(5);
 const filterTotal = ref(25);
 
 const productsList = ref<Product[]>(
-  [...new Array(12)].map((_, index) => ({
-    id: String(index + 100),
-    name: "Cama",
-    description: "Excelente para dormir!",
-    price: 2300,
-    valid: new Date("2024-01-24"),
-    imageUrl:
-      "https://media.istockphoto.com/id/538828557/pt/foto/bela-apartamento-fornecidas.jpg?s=1024x1024&w=is&k=20&c=T-0TxtPgOm5EV2lcAGULp_n1dsTbinU6BtCjcH2VlCo=",
-  }))
+  ProductAPI.fetchProducts().catch((error) => {
+    if (error instanceof ProductNotFoundError) {
+      console.log("Product not found");
+    }
+  })
 );
 </script>
 
