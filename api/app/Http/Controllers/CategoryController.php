@@ -24,6 +24,9 @@ class CategoryController extends Controller
      */
     public function index(Request $request)
     {
+        if ($request->has('all')) {
+            return new CategoryCollectionResource($this->categoryService->all());
+        }
         return new CategoryCollectionResource(
             $this->categoryService->paginate($request->input('page', 1), search: $request->input('search'))
         );
