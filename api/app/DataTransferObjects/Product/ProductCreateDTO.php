@@ -29,7 +29,7 @@ class ProductCreateDTO
             $request->input('price'),
             new \DateTime($request->input('date_validity')),
             $request->file('image'),
-            $request->input('price'),
+            $request->input('category_id'),
         );
     }
 
