@@ -1,6 +1,9 @@
 <template>
-  <h2>Product Edit: {{ $route.params.id }}</h2>
+  <v-container fluid>
+    <ProductEditForm />
+  </v-container>
 </template>
 
 <script lang="ts" setup>
+import ProductEditForm from "@/components/Products/ProductEditForm.vue";
 </script>
