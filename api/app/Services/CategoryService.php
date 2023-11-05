@@ -16,7 +16,9 @@ class CategoryService implements CategoryServiceInterface
     }
     public function paginate(int $currentPage, int $perPage = 12, string $search = null)
     {
-        $query = $this->categoryModel->newQuery();
+        $query = $this->categoryModel->newQuery()
+            ->orderBy('created_at', 'desc')
+            ->orderBy('id', 'desc');
         if ($search) {
             $query->where('name', 'like', "%{$search}%");
         }
@@ -54,6 +56,9 @@ class CategoryService implements CategoryServiceInterface
 
     public function all()
     {
-        return $this->categoryModel->newQuery()->get();
+        return $this->categoryModel->newQuery()
+            ->orderBy('created_at', 'desc')
+            ->orderBy('id', 'desc')
+            ->get();
     }
 }

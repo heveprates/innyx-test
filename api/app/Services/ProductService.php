@@ -18,7 +18,9 @@ class ProductService implements ProductServiceInterface
 
     public function paginate(int $currentPage, int $perPage = 12, string $search = null)
     {
-        $query = $this->productModel->newQuery();
+        $query = $this->productModel->newQuery()
+            ->orderBy('created_at', 'desc')
+            ->orderBy('id', 'desc');
         if ($search) {
             $query->where('name', 'like', "%{$search}%")
                 ->orWhere('description', 'like', "%{$search}%");
