@@ -30,13 +30,13 @@
     </v-col>
   </v-row>
   <v-row justify="space-between" align="center">
-    <v-col cols="6" md="auto" height="100">
+    <v-col cols="12" md="6" height="100" class="text-center text-md-left">
       <strong>
         Mostrando {{ $props.filter.shown }} de
         {{ $props.filter.total }} resultados
       </strong>
     </v-col>
-    <v-col cols="6" md="auto">
+    <v-col cols="12" md="auto">
       <v-pagination
         :model-value="$props.pagination.current"
         :length="$props.pagination.total"
