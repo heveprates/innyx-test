@@ -1,4 +1,5 @@
-import { APIAuthInstance } from "./serviceAPI";
+import { ProductNotFoundError } from "@/error/ProductNotFoundError";
+import { Server } from "./serviceAPI";
 
 export class ProductAPI {
   static async fetchProducts(
@@ -8,12 +9,15 @@ export class ProductAPI {
     try {
       const {
         data: { data, meta },
-      } = await APIAuthInstance.get<ProductAPIFetchData>(`/api/products`, {
-        params: {
-          page,
-          search: search || undefined,
-        },
-      });
+      } = await Server.APIAuthInstance.get<ProductAPIFetchData>(
+        `/api/products`,
+        {
+          params: {
+            page,
+            search: search || undefined,
+          },
+        }
+      );
       return {
         data: data.map((product: ProductAPIType) => ({
           id: String(product.id),
@@ -51,13 +55,12 @@ export class ProductAPI {
       formData.append("date_validity", product.valid.toISOString());
       formData.append("image", product.imageFile);
       formData.append("category_id", product.category);
-      const { data } = await APIAuthInstance.post<ProductAPIType>(
+      const { data } = await Server.APIAuthInstance.post<ProductAPIType>(
         `/api/products`,
         formData
       );
       return String(data.id);
     } catch (error: any) {
-      console.log({ error });
       if (error?.response?.status) throw new ProductNotFoundError();
       throw error;
     }
@@ -65,7 +68,7 @@ export class ProductAPI {
 
   static async fetchShowProduct(id: string): Promise<ProductDetail> {
     try {
-      const { data } = await APIAuthInstance.get(`/api/products/${id}`);
+      const { data } = await Server.APIAuthInstance.get(`/api/products/${id}`);
       return {
         id: String(data.id),
         name: data.name,
@@ -92,7 +95,7 @@ export class ProductAPI {
       formData.append("price", String(product.price));
       formData.append("valid", product.valid.toISOString());
       formData.append("imageUrl", product.imageFile);
-      await APIAuthInstance.put(`/api/products/${id}`, formData);
+      await Server.APIAuthInstance.put(`/api/products/${id}`, formData);
       return id;
     } catch (error: any) {
       if (error?.response?.status) throw new ProductNotFoundError();
@@ -102,17 +105,11 @@ export class ProductAPI {
 
   static async fetchDeleteProduct(id: string): Promise<void> {
     try {
-      await APIAuthInstance.delete(`/api/products/${id}`);
+      await Server.APIAuthInstance.delete(`/api/products/${id}`);
     } catch (error: any) {
       if (error?.response?.status) throw new ProductNotFoundError();
       throw error;
     }
-  }
-}
-
-export class ProductNotFoundError extends Error {
-  constructor() {
-    super(`Nenhum Produto encontrado`);
   }
 }
 

@@ -2,7 +2,7 @@
 import { ref, onMounted } from "vue";
 import ProductCardList, { Product } from "./ProductCardList.vue";
 import PaginatedView from "@/components/PaginatedView.vue";
-import { ProductAPI, ProductNotFoundError } from "@/services/productAPI";
+import { ProductAPI } from "@/services/productAPI";
 
 const loadingData = ref(false);
 const currentPage = ref(1);
@@ -25,11 +25,6 @@ function fetchProducts() {
     })
     .catch((error) => {
       loadingData.value = false;
-      if (error instanceof ProductNotFoundError) {
-        console.log(ProductNotFoundError);
-      } else {
-        console.log("Error");
-      }
     });
 }
 
