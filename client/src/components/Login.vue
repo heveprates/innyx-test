@@ -4,10 +4,13 @@ import { useRouter } from "vue-router";
 import { useField } from "vee-validate";
 import * as yup from "yup";
 
+import { useNotification } from "@/composables/useNotification";
 import { AuthService } from "@/services/auth";
+import { AuthLoginError } from "@/error/AuthErrors";
 
 const visible = ref(false);
 const loading = ref(false);
+const notification = useNotification();
 
 const router = useRouter();
 
@@ -15,7 +18,10 @@ const emailField = useField<string>("email", yup.string().required().email());
 const pwdField = useField<string>("password", yup.string().required().min(3));
 
 const submit = () => {
-  if (!emailField.meta.valid || !pwdField.meta.valid) return;
+  if (!emailField.meta.valid || !pwdField.meta.valid) {
+    notification.show("Verifique os campos", "warning");
+    return;
+  }
 
   loading.value = true;
   AuthService.login(emailField.value.value, pwdField.value.value)
@@ -23,7 +29,13 @@ const submit = () => {
       router.push("/");
     })
     .catch((error) => {
-      console.log(error);
+      if (error instanceof AuthLoginError) {
+        notification.show(error.message, "error");
+        return;
+      } else {
+        notification.show("Erro desconhecido ao realizar o login", "error");
+        return;
+      }
     })
     .finally(() => {
       loading.value = false;
