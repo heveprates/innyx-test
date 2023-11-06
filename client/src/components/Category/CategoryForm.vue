@@ -7,14 +7,19 @@ const name = useField<CategoryFormProps["name"]>(
   yup.string().required().max(100)
 );
 
-const values = {
-  name: name.value,
-};
+defineExpose({
+  getDate: (): CategoryFormProps => ({
+    name: name.value.value,
+  }),
+  setData: (value: CategoryFormProps) => {
+    name.value.value = value.name;
+  },
+});
 </script>
 
 <script lang="ts">
 export type CategoryFormProps = {
-  name: string;
+  name: string | null;
 };
 </script>
 
