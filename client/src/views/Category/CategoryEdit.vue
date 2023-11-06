@@ -1,6 +1,9 @@
 <template>
-  <h2>Category Edit: {{ $route.params.id }}</h2>
+  <v-container fluid>
+    <CategoryEditForm />
+  </v-container>
 </template>
 
 <script lang="ts" setup>
+import CategoryEditForm from "@/components/Category/CategoryEditForm.vue";
 </script>
