@@ -45,7 +45,8 @@ class CategoryService implements CategoryServiceInterface
         if ($categoryUpdateDTO->name !== null) {
             $requestInput['name'] = $categoryUpdateDTO->name;
         }
-        return $category->update($requestInput);
+        $category->update($requestInput);
+        return $this->findById($id);
     }
 
     public function deleteById(int $id)
