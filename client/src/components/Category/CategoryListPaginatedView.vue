@@ -58,6 +58,7 @@ onMounted(() => fetchCategories());
 
 function changeSearchHandle(search: string) {
   filterSearch.value = search;
+  currentPage.value = 1;
   fetchCategories();
 }
 
