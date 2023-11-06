@@ -5,10 +5,11 @@ import { useRouter, useRoute } from "vue-router";
 import CategoryForm, {
   CategoryFormProps,
 } from "@/components/Category/CategoryForm.vue";
-import { FormDataError } from "@/error/FormDataError";
+import { CategoryNotFoundError } from "@/error/CategoryError.js";
 import { CategoryAPIFetch } from "@/services/categoryAPI";
-import { validFormData, notififyError } from "@/tools/form";
+import { useNotification } from "@/composables/useNotification";
 
+const notification = useNotification();
 const router = useRouter();
 const categoryId = useRoute().params.id as string;
 const isLoadedFull = ref(false);
@@ -20,6 +21,16 @@ onBeforeMount(() =>
     .then((category) => {
       categoryAPIData.name = category.name;
       setFormData(categoryAPIData);
+    })
+    .catch((error) => {
+      if (error instanceof CategoryNotFoundError) {
+        notification.show(error.message, "error");
+        router.push("/category");
+        return;
+      }
+      notification.show("Erro desconhecido ao carregar categoria", "error");
+      router.push("/category");
+      return;
     })
     .finally(() => (isLoadedFull.value = true))
 );
@@ -45,7 +56,7 @@ const handleGoBack = () => {
 const handleSubmit = () => {
   const formData = getFormData();
   if (!formData.name) {
-    notififyError("Verifique se o campo 'Nome' esta preenchido");
+    notification.show("Verifique se o campo 'Nome' esta preenchido", "warning");
     return;
   }
   if (formData.name === categoryAPIData.name) {
@@ -55,7 +66,7 @@ const handleSubmit = () => {
   isSubmit.value = true;
   CategoryAPIFetch.update(categoryId, { name: formData.name })
     .then(() => router.push("/category"))
-    .catch(() => notififyError("Erro ao salvar categoria"))
+    .catch(() => notification.show("Erro ao salvar categoria", "error"))
     .finally(() => (isSubmit.value = false));
 };
 </script>

@@ -28,7 +28,9 @@ export class AuthService {
       await Server.APIAuthInstance.post("/api/auth/logout");
       this.removeAuthToken();
     } catch (error: any) {
-      if (error?.response?.status) throw new AuthLogoutError();
+      if (error?.response?.data?.message) {
+        throw new AuthLogoutError(error?.response?.data?.message);
+      }
       throw error;
     }
   }

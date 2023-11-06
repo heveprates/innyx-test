@@ -1,4 +1,4 @@
-import { CategoryNotFoundError } from "@/error/CategoryNotFoundError";
+import { CategoryNotFoundError } from "@/error/CategoryError";
 import { Server } from "./serviceAPI";
 
 export class CategoryAPIFetch {
@@ -30,7 +30,9 @@ export class CategoryAPIFetch {
         },
       };
     } catch (error: any) {
-      if (error?.response?.status) throw new CategoryNotFoundError();
+      if (error?.response?.data?.message) {
+        throw new CategoryNotFoundError(error?.response?.data?.message);
+      }
       throw error;
     }
   }
@@ -52,7 +54,9 @@ export class CategoryAPIFetch {
         name: category.name,
       }));
     } catch (error: any) {
-      if (error?.response?.status) throw new CategoryNotFoundError();
+      if (error?.response?.data?.message) {
+        throw new CategoryNotFoundError(error?.response?.data?.message);
+      }
       throw error;
     }
   }
@@ -67,7 +71,9 @@ export class CategoryAPIFetch {
       );
       return String(data.id);
     } catch (error: any) {
-      if (error?.response?.status) throw new CategoryNotFoundError();
+      if (error?.response?.data?.message) {
+        throw new CategoryNotFoundError(error?.response?.data?.message);
+      }
       throw error;
     }
   }
@@ -82,7 +88,9 @@ export class CategoryAPIFetch {
         name: data.category.name,
       };
     } catch (error: any) {
-      if (error?.response?.status) throw new CategoryNotFoundError();
+      if (error?.response?.data?.message) {
+        throw new CategoryNotFoundError(error?.response?.data?.message);
+      }
       throw error;
     }
   }
@@ -95,7 +103,9 @@ export class CategoryAPIFetch {
       await Server.APIAuthInstance.post(`/api/categories/${id}`, formData);
       return id;
     } catch (error: any) {
-      if (error?.response?.status) throw new CategoryNotFoundError();
+      if (error?.response?.data?.message) {
+        throw new CategoryNotFoundError(error?.response?.data?.message);
+      }
       throw error;
     }
   }
@@ -104,7 +114,9 @@ export class CategoryAPIFetch {
     try {
       await Server.APIAuthInstance.delete(`/api/categories/${id}`);
     } catch (error: any) {
-      if (error?.response?.status) throw new CategoryNotFoundError();
+      if (error?.response?.data?.message) {
+        throw new CategoryNotFoundError(error?.response?.data?.message);
+      }
       throw error;
     }
   }

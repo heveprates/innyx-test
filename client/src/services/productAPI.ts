@@ -1,4 +1,4 @@
-import { ProductNotFoundError } from "@/error/ProductNotFoundError";
+import { ProductNotFoundError } from "@/error/ProductError";
 import { Server } from "./serviceAPI";
 
 export class ProductAPIFetch {
@@ -34,7 +34,10 @@ export class ProductAPIFetch {
         },
       };
     } catch (error: any) {
-      if (error?.response?.status) throw new ProductNotFoundError();
+      if (error?.response?.data?.message) {
+        throw new ProductNotFoundError(error?.response?.data?.message);
+      }
+
       throw error;
     }
   }
@@ -61,7 +64,10 @@ export class ProductAPIFetch {
       );
       return String(data.id);
     } catch (error: any) {
-      if (error?.response?.status) throw new ProductNotFoundError();
+      if (error?.response?.data?.message) {
+        throw new ProductNotFoundError(error?.response?.data?.message);
+      }
+
       throw error;
     }
   }
@@ -81,7 +87,10 @@ export class ProductAPIFetch {
         categoryId: String(data.product.categoryId),
       };
     } catch (error: any) {
-      if (error?.response?.status) throw new ProductNotFoundError();
+      if (error?.response?.data?.message) {
+        throw new ProductNotFoundError(error?.response?.data?.message);
+      }
+
       throw error;
     }
   }
@@ -126,7 +135,10 @@ export class ProductAPIFetch {
       await Server.APIAuthInstance.post(`/api/products/${id}`, formData);
       return id;
     } catch (error: any) {
-      if (error?.response?.status) throw new ProductNotFoundError();
+      if (error?.response?.data?.message) {
+        throw new ProductNotFoundError(error?.response?.data?.message);
+      }
+
       throw error;
     }
   }
@@ -135,7 +147,10 @@ export class ProductAPIFetch {
     try {
       await Server.APIAuthInstance.delete(`/api/products/${id}`);
     } catch (error: any) {
-      if (error?.response?.status) throw new ProductNotFoundError();
+      if (error?.response?.data?.message) {
+        throw new ProductNotFoundError(error?.response?.data?.message);
+      }
+
       throw error;
     }
   }

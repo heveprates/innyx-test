@@ -5,7 +5,7 @@ export class AuthLoginError extends Error {
 }
 
 export class AuthLogoutError extends Error {
-  constructor() {
-    super(`Erro ao realizar logout`);
+  constructor(msg?: string) {
+    super(`Erro ao realizar logout${msg ? `: ${msg}` : ""}`);
   }
 }

@@ -9,7 +9,9 @@ import { FormDataError } from "@/error/FormDataError";
 import { ProductAPIFetch } from "@/services/productAPI";
 import { CategoryAPIFetch } from "@/services/categoryAPI";
 import { validFormData, notififyError } from "@/tools/form";
+import { useNotification } from "@/composables/useNotification";
 
+const notification = useNotification();
 const router = useRouter();
 const productId = useRoute().params.id as string;
 const isLoadedFull = ref(false);
@@ -22,6 +24,11 @@ onBeforeMount(() => {
   let fetch = CategoryAPIFetch.all().then((categories) => {
     categoryList.value = categories;
   });
+  fetch.catch(() => {
+    notification.show("Erro desconhecido ao carregar categoria", "error");
+    router.push("/product");
+    return;
+  });
   fetchInitials.push(fetch);
 
   fetch = ProductAPIFetch.show(productId).then((product) => {
@@ -33,6 +40,11 @@ onBeforeMount(() => {
     productData.image = new File([""], product.imageUrl, { type: "image/*" });
 
     setFormData(productData);
+  });
+  fetch.catch(() => {
+    notification.show("Erro desconhecido ao carregar produto", "error");
+    router.push("/product");
+    return;
   });
   fetchInitials.push(fetch);
   Promise.all(fetchInitials).finally(() => (isLoadedFull.value = true));
@@ -70,9 +82,9 @@ const handleSubmit = () => {
     validFormData(valuesToPost);
   } catch (error) {
     if (error instanceof FormDataError) {
-      notififyError(error.message);
+      notification.show(error.message, "warning");
     } else {
-      notififyError("Verifique os campos obrigatórios");
+      notification.show("Verifique os campos obrigatórios", "warning");
     }
     return;
   }
@@ -80,7 +92,7 @@ const handleSubmit = () => {
   isSubmit.value = true;
   ProductAPIFetch.update(productId, valuesToPost)
     .then(() => router.push("/product"))
-    .catch(() => notififyError("Erro ao salvar produto"))
+    .catch(() => notification.show("Erro ao salvar produto", "error"))
     .finally(() => (isSubmit.value = false));
 };
 

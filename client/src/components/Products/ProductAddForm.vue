@@ -5,12 +5,14 @@ import { useRouter } from "vue-router";
 import ProductForm, {
   ProductFormProps,
 } from "@/components/Products/ProductForm.vue";
+import { useNotification } from "@/composables/useNotification";
 import { FormDataError } from "@/error/FormDataError";
 import { ProductAPIFetch } from "@/services/productAPI";
 import { CategoryAPIFetch } from "@/services/categoryAPI";
 import { validFormData, notififyError } from "@/tools/form";
 
 const router = useRouter();
+const notification = useNotification();
 
 const isSubmit = ref(false);
 const formRef = ref<InstanceType<typeof ProductForm> | null>(null);
@@ -35,9 +37,9 @@ const handleSubmit = () => {
     values = validFormData(getFormData());
   } catch (error) {
     if (error instanceof FormDataError) {
-      notififyError(error.message);
+      notification.show(error.message, "warning");
     } else {
-      notififyError("Verifique os campos obrigatórios");
+      notification.show("Não conseguimos obter os dados inseridos", "error");
     }
     return;
   }
@@ -52,7 +54,7 @@ const handleSubmit = () => {
     imageFile: values.image,
   })
     .then(() => router.push("/product"))
-    .catch(() => notififyError("Erro ao salvar produto"))
+    .catch(() => notification.show("Erro ao salvar produto", "error"))
     .finally(() => (isSubmit.value = false));
 };
 
