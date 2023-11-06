@@ -11,7 +11,7 @@
       <v-card class="mx-auto" min-width="180">
         <v-img
           class="align-end text-white"
-          height="188"
+          height="288"
           :src="product.imageUrl"
           cover
         >
