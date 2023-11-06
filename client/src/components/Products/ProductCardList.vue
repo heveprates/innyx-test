@@ -36,7 +36,9 @@
             Editar
           </v-btn>
 
-          <v-btn color="red"> Excluir </v-btn>
+          <v-btn color="red" @click="() => $emit('delete-product', product)">
+            Excluir
+          </v-btn>
         </v-card-actions>
       </v-card>
     </v-col>
@@ -46,6 +48,10 @@
 <script lang="ts" setup>
 defineProps<{
   productsList: Product[];
+}>();
+
+defineEmits<{
+  (event: "delete-product", input: Product): void;
 }>();
 
 const printMoney = (value: number) => {
