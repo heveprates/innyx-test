@@ -17,8 +17,32 @@ defineExpose({
     price: price.value.value,
     expirationDate: expirationDate.value.value,
     categoryId: categoryId.value.value,
-    image: image.value.value[0],
+    image: image.value.value ? image.value.value[0] : null,
   }),
+  setData: (value: Partial<ProductFormProps>) => {
+    if (value.name !== undefined) {
+      name.value.value = value.name;
+    }
+    if (value.description !== undefined) {
+      description.value.value = value.description;
+    }
+    if (value.price !== undefined) {
+      setValue(value.price);
+    }
+    if (value.expirationDate !== undefined) {
+      expirationDate.value.value = value.expirationDate;
+    }
+    if (value.categoryId !== undefined) {
+      categoryId.value.value = value.categoryId;
+    }
+    if (value.image !== undefined) {
+      if (value.image === null) {
+        image.value.value = null;
+      } else {
+        image.value.value = [value.image];
+      }
+    }
+  },
 });
 
 const name = useField<ProductFormProps["name"]>(
@@ -31,6 +55,7 @@ const description = useField<ProductFormProps["description"]>(
 );
 const {
   field: price,
+  setValue,
   inputRef,
   formattedValue,
 } = useFieldCurrency<ProductFormProps["price"]>(
@@ -46,7 +71,7 @@ const categoryId = useField<ProductFormProps["categoryId"]>(
   "categoryId",
   yup.string().required()
 );
-const image = useField<ProductFormProps["image"][]>(
+const image = useField<NonNullable<ProductFormProps["image"]>[] | null>(
   "image",
   yup
     .mixed<ProductFormProps["image"][]>()
@@ -84,12 +109,12 @@ const currencyConfig = {
 };
 
 export type ProductFormProps = {
-  name: string;
-  description: string;
-  price: number;
-  expirationDate: Date;
-  categoryId: string;
-  image: File;
+  name: string | null;
+  description: string | null;
+  price: number | null;
+  expirationDate: Date | null;
+  categoryId: string | null;
+  image: File | null;
 };
 </script>
 
@@ -128,6 +153,7 @@ export type ProductFormProps = {
       />
 
       <v-file-input
+        class="file-input-produto"
         label="Imagem do produto"
         v-model="image.value.value"
         prepend-icon=""
@@ -146,3 +172,9 @@ export type ProductFormProps = {
     </v-col>
   </v-row>
 </template>
+
+<style>
+.file-input-produto .v-field__input {
+  overflow: hidden;
+}
+</style>
