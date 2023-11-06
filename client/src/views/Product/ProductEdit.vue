@@ -1,7 +1,5 @@
 <template>
-  <v-container fluid>
-    <ProductEditForm />
-  </v-container>
+  <ProductEditForm />
 </template>
 
 <script lang="ts" setup>
