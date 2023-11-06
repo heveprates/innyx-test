@@ -8,7 +8,7 @@ const name = useField<CategoryFormProps["name"]>(
 );
 
 defineExpose({
-  getDate: (): CategoryFormProps => ({
+  getData: (): CategoryFormProps => ({
     name: name.value.value,
   }),
   setData: (value: CategoryFormProps) => {
