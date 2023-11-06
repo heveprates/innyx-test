@@ -66,17 +66,19 @@ export class ProductAPI {
     }
   }
 
-  static async fetchShowProduct(id: string): Promise<ProductDetail> {
+  static async fetchShowProduct(id: string): Promise<ProductAPIDetail> {
     try {
-      const { data } = await Server.APIAuthInstance.get(`/api/products/${id}`);
+      const { data } = await Server.APIAuthInstance.get<{
+        product: ProductAPIDetail;
+      }>(`/api/products/${id}`);
       return {
-        id: String(data.id),
-        name: data.name,
-        description: data.description,
-        price: data.price,
-        valid: new Date(data.valid),
-        imageUrl: data.imageUrl,
-        categoryId: String(data.categoryId),
+        id: String(data.product.id),
+        name: data.product.name,
+        description: data.product.description,
+        price: data.product.price,
+        valid: new Date(data.product.valid),
+        imageUrl: data.product.imageUrl,
+        categoryId: String(data.product.categoryId),
       };
     } catch (error: any) {
       if (error?.response?.status) throw new ProductNotFoundError();
@@ -85,17 +87,43 @@ export class ProductAPI {
   }
 
   static async fetchUpdateProduct(
-    product: Omit<Product, "imageUrl"> & { imageFile: File },
-    id: string
+    id: string,
+    product: Partial<{
+      name: string | null;
+      description: string | null;
+      price: number | null;
+      valid: Date | null;
+      image: File | null;
+    }>
   ): Promise<string> {
-    try {
-      const formData = new FormData();
+    const formData = new FormData();
+    let submitForm = false;
+    if (product.name) {
+      submitForm = true;
       formData.append("name", product.name);
+    }
+    if (product.description) {
+      submitForm = true;
       formData.append("description", product.description);
+    }
+    if (product.price) {
+      submitForm = true;
       formData.append("price", String(product.price));
+    }
+    if (product.valid) {
+      submitForm = true;
       formData.append("valid", product.valid.toISOString());
-      formData.append("imageUrl", product.imageFile);
-      await Server.APIAuthInstance.put(`/api/products/${id}`, formData);
+    }
+    if (product.image) {
+      submitForm = true;
+      formData.append("imageUrl", product.image);
+    }
+    if (!submitForm) {
+      return id;
+    }
+    formData.append('_method', 'PUT')
+    try {
+      await Server.APIAuthInstance.post(`/api/products/${id}`, formData);
       return id;
     } catch (error: any) {
       if (error?.response?.status) throw new ProductNotFoundError();
@@ -150,7 +178,7 @@ type Product = {
   imageUrl: string;
 };
 
-type ProductDetail = {
+type ProductAPIDetail = {
   id: string;
   name: string;
   description: string;
