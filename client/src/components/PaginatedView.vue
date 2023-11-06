@@ -21,16 +21,13 @@
   <v-row>
     <v-col cols="12">
       <div v-if="$props.loading" class="text-center">
-        <v-progress-circular
-          indeterminate
-          color="primary"
-        ></v-progress-circular>
+        <v-progress-circular indeterminate color="primary" />
       </div>
       <slot v-else />
     </v-col>
   </v-row>
   <v-row justify="space-between" align="center">
-    <v-col cols="12" md="6" height="100" class="text-center text-md-left">
+    <v-col cols="12" md="6" class="text-center text-md-left">
       <strong>
         Mostrando {{ $props.filter.shown }} de
         {{ $props.filter.total }} resultados
