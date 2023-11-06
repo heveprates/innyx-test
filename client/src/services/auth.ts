@@ -16,7 +16,9 @@ export class AuthService {
       this.setAuthToken(response.data.bearer_token);
       return response.data;
     } catch (error: any) {
-      if (error?.response?.status) throw new AuthLoginError();
+      if (error?.response?.data?.message) {
+        throw new AuthLoginError(error?.response?.data?.message);
+      }
       throw error;
     }
   }
