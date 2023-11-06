@@ -17,6 +17,7 @@ import { enUS, ptBR } from "date-fns/locale";
 // https://vuetifyjs.com/en/introduction/why-vuetify/#feature-guides
 export default createVuetify({
   theme: {
+    defaultTheme: "dark",
     themes: {
       light: {
         colors: {

@@ -1,6 +1,6 @@
 <template>
   <v-app :theme="theme">
-    <default-bar class="bg-deep-orange-lighten-1" />
+    <default-bar class="bg-primary" />
     <default-view />
   </v-app>
 </template>
