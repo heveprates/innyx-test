@@ -1,4 +1,6 @@
 import { RouterOptions, createRouter, createWebHistory } from "vue-router";
+import type { RouteLocationNormalized } from "vue-router";
+import { AuthService } from "../services/auth";
 
 const routes: RouterOptions["routes"] = [
   {
@@ -63,6 +65,20 @@ const routes: RouterOptions["routes"] = [
 const router = createRouter({
   history: createWebHistory(process.env.BASE_URL),
   routes,
+});
+
+function canUserAccess(to: RouteLocationNormalized) {
+  const isAuthenticated = AuthService.isAuthenticated();
+  return isAuthenticated || to.name === "login";
+}
+
+router.beforeEach(async (to, from, next) => {
+  const canAccess = await canUserAccess(to);
+  if (!canAccess) {
+    next({ name: "login" });
+  } else {
+    next();
+  }
 });
 
 export default router;
