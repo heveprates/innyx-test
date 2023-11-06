@@ -82,6 +82,9 @@ const image = useField<NonNullable<ProductFormProps["image"]>[] | null>(
         if (file.length == 0) {
           return false;
         }
+        if (file[0] === null) {
+          return;
+        }
         const isValid = file[0]?.size < MAX_FILE_SIZE;
         return isValid;
       },
@@ -91,6 +94,9 @@ const image = useField<NonNullable<ProductFormProps["image"]>[] | null>(
       test: (file) => {
         if (file.length == 0) {
           return false;
+        }
+        if (file[0] === null) {
+          return;
         }
         return file[0]?.type.startsWith("image/");
       },
