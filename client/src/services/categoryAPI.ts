@@ -74,12 +74,12 @@ export class CategoryAPIFetch {
 
   static async show(id: string): Promise<Category> {
     try {
-      const { data } = await Server.APIAuthInstance.get(
-        `/api/categories/${id}`
-      );
+      const { data } = await Server.APIAuthInstance.get<{
+        category: CategoryAPIResponse;
+      }>(`/api/categories/${id}`);
       return {
-        id: String(data.id),
-        name: data.name,
+        id: String(data.category.id),
+        name: data.category.name,
       };
     } catch (error: any) {
       if (error?.response?.status) throw new CategoryNotFoundError();
@@ -87,11 +87,12 @@ export class CategoryAPIFetch {
     }
   }
 
-  static async update(category: { name: string }, id: string): Promise<string> {
+  static async update(id: string, category: { name: string }): Promise<string> {
     try {
       const formData = new FormData();
       formData.append("name", category.name);
-      await Server.APIAuthInstance.put(`/api/categories/${id}`, formData);
+      formData.append("_method", "PUT");
+      await Server.APIAuthInstance.post(`/api/categories/${id}`, formData);
       return id;
     } catch (error: any) {
       if (error?.response?.status) throw new CategoryNotFoundError();
