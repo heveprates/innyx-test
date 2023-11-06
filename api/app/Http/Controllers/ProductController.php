@@ -55,9 +55,9 @@ class ProductController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateProductRequest $request, Product $product)
+    public function update(UpdateProductRequest $request, string $id)
     {
-        $product = $this->productService->updateById($product->id, ProductUpdateDTO::fromRequest($request));
+        $product = $this->productService->updateById($id, ProductUpdateDTO::fromRequest($request));
         return new ProductResource($product);
     }
 
