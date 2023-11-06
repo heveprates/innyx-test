@@ -2,7 +2,7 @@ import { useField } from "vee-validate";
 import { useCurrencyInput } from "vue-currency-input";
 import { watch, onMounted } from "vue";
 
-export function useFieldCurrency<T extends number>(
+export function useFieldCurrency<T extends number | null>(
   fieldArgs: Parameters<typeof useField<T>>,
   currencyArgs: Parameters<typeof useCurrencyInput>
 ) {
