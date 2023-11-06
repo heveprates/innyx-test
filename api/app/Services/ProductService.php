@@ -68,7 +68,8 @@ class ProductService implements ProductServiceInterface
         if ($productUpdateDTO->categoryId !== null) {
             $requestInput['category_id'] = $productUpdateDTO->categoryId;
         }
-        return $product->update($requestInput);
+        $product->update($requestInput);
+        return $this->findById($id);
     }
 
     public function deleteById(int $id)
