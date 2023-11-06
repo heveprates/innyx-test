@@ -1,11 +1,26 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, onBeforeMount } from "vue";
+import { useRouter } from "vue-router";
+
 import ProductForm, {
   ProductFormProps,
 } from "@/components/Products/ProductForm.vue";
-import { ProductAPI, ProductNotFoundError } from "@/services/productAPI";
+import { FormDataError } from "@/error/FormDataError";
+import { ProductAPI } from "@/services/productAPI";
+import { CategoryAPIFetch } from "@/services/categoryAPI";
+import { validFormData, notififyError } from "@/tools/form";
 
+const router = useRouter();
+
+const isSubmit = ref(false);
 const formRef = ref<InstanceType<typeof ProductForm> | null>(null);
+const categoryList = ref<{ id: string; name: string }[]>([]);
+
+onBeforeMount(() =>
+  CategoryAPIFetch.all().then((categories) => {
+    categoryList.value = categories;
+  })
+);
 
 const getFormData = (): ProductFormProps => {
   if (!formRef.value) {
@@ -15,7 +30,19 @@ const getFormData = (): ProductFormProps => {
 };
 
 const handleSubmit = () => {
-  const values = getFormData();
+  let values;
+  try {
+    values = validFormData(getFormData());
+  } catch (error) {
+    if (error instanceof FormDataError) {
+      notififyError(error.message);
+    } else {
+      notififyError("Verifique os campos obrigatórios");
+    }
+    return;
+  }
+
+  isSubmit.value = true;
   ProductAPI.fetchStoreProduct({
     name: values.name,
     description: values.description,
@@ -24,40 +51,24 @@ const handleSubmit = () => {
     category: values.categoryId,
     imageFile: values.image,
   })
-    .then((product) => {
-      console.log(product);
-    })
-    .catch((error) => {
-      if (error instanceof ProductNotFoundError) {
-        console.log(ProductNotFoundError);
-      } else {
-        console.log("Error");
-      }
-    });
+    .then(() => router.push("/product"))
+    .catch(() => notififyError("Erro ao salvar produto"))
+    .finally(() => (isSubmit.value = false));
 };
 
-const handleReset = () => {};
-
 const handleGoBack = () => {
-  window.history.back();
+  router.back();
 };
 </script>
 <template>
   <form @submit.prevent="() => handleSubmit()" class="mt-8">
-    <ProductForm
-      ref="formRef"
-      :categoryList="[
-        { id: '1', name: 'Quarto' },
-        { id: '16', name: 'Cozinha' },
-        { id: '3', name: 'Sala' },
-        { id: '4', name: 'Banheiro' },
-      ]"
-    />
+    <ProductForm ref="formRef" :categoryList="categoryList" />
     <v-row justify="center">
       <v-col cols="auto">
-        <v-btn class="me-4" type="submit"> Salvar </v-btn>
-        <v-btn class="me-4" @click="() => handleReset()"> Limpar </v-btn>
-        <v-btn @click="() => handleGoBack()"> Voltar </v-btn>
+        <v-btn class="me-4" type="submit" :loading="isSubmit"> Salvar </v-btn>
+        <v-btn @click="() => handleGoBack()" :disabled="isSubmit">
+          Voltar
+        </v-btn>
       </v-col>
     </v-row>
   </form>
