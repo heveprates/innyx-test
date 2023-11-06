@@ -20,9 +20,11 @@ Para começar com o projeto, siga estas etapas:
 
 1. Clone o repositório
 2. Navegue até a pasta `api`
-3. Inicie os containers do PHP e do MySql com o comando `docker compose up`
-4. O Back-end vai iniciar um servidor na porta 8000
-5. Execute o comando `php artisan migrate:refresh --seed` dentro do container do PHP
+3. Instale as dependencias com `composer install`
+4. Copie o arquivo de env `cp .env.example .env`
+5. Inicie os containers do PHP e do MySql com o comando `docker compose up`
+6. O Back-end vai iniciar um servidor na porta 8000
+7. Execute o comando `php artisan migrate:refresh --seed` dentro do container do PHP
 
 ## Acesso
 
