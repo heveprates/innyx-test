@@ -8,11 +8,24 @@ export const Server = {
     });
   },
   get APIAuthInstance() {
-    return axios.create({
+    const instance = axios.create({
       baseURL: "http://localhost:8000",
       headers: {
         Authorization: `Bearer ${AuthService.getAuthToken()}`,
       },
     });
+    instance.interceptors.response.use(
+      (response) => response,
+      (error) => {
+        if (error.response.status !== 401) {
+          return;
+        }
+        if (error.response.data.message !== "Não autenticado") {
+          return;
+        }
+        AuthService.removeAuthToken();
+      }
+    );
+    return instance;
   },
 };

@@ -40,7 +40,7 @@ export class AuthService {
     localStorage.setItem("authToken", token);
   }
 
-  private static removeAuthToken() {
+  static removeAuthToken() {
     this.authToken = null;
     localStorage.removeItem("authToken");
   }
