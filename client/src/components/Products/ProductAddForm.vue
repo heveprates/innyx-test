@@ -6,7 +6,7 @@ import ProductForm, {
   ProductFormProps,
 } from "@/components/Products/ProductForm.vue";
 import { FormDataError } from "@/error/FormDataError";
-import { ProductAPI } from "@/services/productAPI";
+import { ProductAPIFetch } from "@/services/productAPI";
 import { CategoryAPIFetch } from "@/services/categoryAPI";
 import { validFormData, notififyError } from "@/tools/form";
 
@@ -43,7 +43,7 @@ const handleSubmit = () => {
   }
 
   isSubmit.value = true;
-  ProductAPI.fetchStoreProduct({
+  ProductAPIFetch.store({
     name: values.name,
     description: values.description,
     price: values.price,

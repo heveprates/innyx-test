@@ -2,7 +2,7 @@
 import { ref, onMounted } from "vue";
 import ProductCardList, { Product } from "./ProductCardList.vue";
 import PaginatedView from "@/components/PaginatedView.vue";
-import { ProductAPI } from "@/services/productAPI";
+import { ProductAPIFetch } from "@/services/productAPI";
 
 const loadingData = ref(false);
 const currentPage = ref(1);
@@ -26,7 +26,7 @@ const deleteConfirmHandle = () => {
     return;
   }
   deleteIsLoading.value = true;
-  ProductAPI.fetchDeleteProduct(deleteProduct.value.id)
+  ProductAPIFetch.delete(deleteProduct.value.id)
     .then(() => {
       deleteDialog.value = false;
       deleteProduct.value = null;
@@ -43,7 +43,7 @@ const deleteConfirmHandle = () => {
 
 function fetchProducts() {
   loadingData.value = true;
-  ProductAPI.fetchProducts(currentPage.value, filterSearch.value)
+  ProductAPIFetch.listPage(currentPage.value, filterSearch.value)
     .then((response) => {
       productsList.value = response.data;
       currentPage.value = response.pagination.current;

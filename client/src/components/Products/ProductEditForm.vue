@@ -6,7 +6,7 @@ import ProductForm, {
   ProductFormProps,
 } from "@/components/Products/ProductForm.vue";
 import { FormDataError } from "@/error/FormDataError";
-import { ProductAPI } from "@/services/productAPI";
+import { ProductAPIFetch } from "@/services/productAPI";
 import { CategoryAPIFetch } from "@/services/categoryAPI";
 import { validFormData, notififyError } from "@/tools/form";
 
@@ -24,7 +24,7 @@ onBeforeMount(() => {
   });
   fetchInitials.push(fetch);
 
-  fetch = ProductAPI.fetchShowProduct(productId).then((product) => {
+  fetch = ProductAPIFetch.show(productId).then((product) => {
     productData.name = product.name;
     productData.description = product.description;
     productData.price = product.price;
@@ -78,7 +78,7 @@ const handleSubmit = () => {
   }
 
   isSubmit.value = true;
-  ProductAPI.fetchUpdateProduct(productId, valuesToPost)
+  ProductAPIFetch.update(productId, valuesToPost)
     .then(() => router.push("/product"))
     .catch(() => notififyError("Erro ao salvar produto"))
     .finally(() => (isSubmit.value = false));

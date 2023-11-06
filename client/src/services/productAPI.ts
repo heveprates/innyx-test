@@ -1,8 +1,8 @@
 import { ProductNotFoundError } from "@/error/ProductNotFoundError";
 import { Server } from "./serviceAPI";
 
-export class ProductAPI {
-  static async fetchProducts(
+export class ProductAPIFetch {
+  static async listPage(
     page: number,
     search: string
   ): Promise<ProductFetchResponse> {
@@ -39,7 +39,7 @@ export class ProductAPI {
     }
   }
 
-  static async fetchStoreProduct(product: {
+  static async store(product: {
     name: string;
     description: string;
     price: number;
@@ -66,7 +66,7 @@ export class ProductAPI {
     }
   }
 
-  static async fetchShowProduct(id: string): Promise<ProductAPIDetail> {
+  static async show(id: string): Promise<ProductAPIDetail> {
     try {
       const { data } = await Server.APIAuthInstance.get<{
         product: ProductAPIDetail;
@@ -86,7 +86,7 @@ export class ProductAPI {
     }
   }
 
-  static async fetchUpdateProduct(
+  static async update(
     id: string,
     product: Partial<{
       name: string | null;
@@ -121,7 +121,7 @@ export class ProductAPI {
     if (!submitForm) {
       return id;
     }
-    formData.append('_method', 'PUT')
+    formData.append("_method", "PUT");
     try {
       await Server.APIAuthInstance.post(`/api/products/${id}`, formData);
       return id;
@@ -131,7 +131,7 @@ export class ProductAPI {
     }
   }
 
-  static async fetchDeleteProduct(id: string): Promise<void> {
+  static async delete(id: string): Promise<void> {
     try {
       await Server.APIAuthInstance.delete(`/api/products/${id}`);
     } catch (error: any) {
