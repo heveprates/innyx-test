@@ -1,4 +1,3 @@
-// Composables
 import { RouterOptions, createRouter, createWebHistory } from "vue-router";
 
 const routes: RouterOptions["routes"] = [
@@ -53,6 +52,11 @@ const routes: RouterOptions["routes"] = [
         ],
       },
     ],
+  },
+  {
+    path: "/login",
+    name: "login",
+    component: () => import("@/views/Login.vue"),
   },
 ];
 
