@@ -11,6 +11,10 @@
           hide-details
           clearable
           v-model="searchInput"
+          @click:clear="() => $props.filter.changeSearch('')"
+          @update:model-value="
+            delaySearch(() => $props.filter.changeSearch(searchInput))
+          "
         ></v-text-field>
       </form>
     </v-col>
@@ -39,6 +43,7 @@
         :length="$props.pagination.total"
         @update:model-value="($event) => $props.pagination.changePage($event)"
         rounded="circle"
+        :total-visible="6"
       ></v-pagination>
     </v-col>
   </v-row>
@@ -47,7 +52,10 @@
 <script lang="ts" setup>
 import { ref } from "vue";
 
+import { debounce } from "@/tools/debounce";
+
 const searchInput = ref("");
+const delaySearch = debounce((run) => run(), 850);
 
 defineProps<{
   pagination: {
