@@ -77,7 +77,12 @@ function isValidDate(value: string): boolean {
 function makeDate(value: string): Date {
   const date = parse(value, DatePatter, new Date());
   return new Date(
-    Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate())
+    Date.UTC(
+      date.getUTCFullYear(),
+      date.getUTCMonth(),
+      date.getUTCDate(),
+      date.getTimezoneOffset() / 60
+    )
   );
 }
 
@@ -107,17 +112,15 @@ type PropsVDatePicker = InstanceType<typeof VDatePicker>["$props"];
           eager
           :close-on-content-click="false"
         >
-          <v-locale-provider locale="br">
-            <v-date-picker
-              v-bind="{ ...($props.datePicker ?? {}) }"
-              @update:modelValue="() => (menuOpen = false)"
-              @click:cancel="() => (menuOpen = false)"
-              v-model="datePickerValueModel"
-            >
-              <template #title />
-              <template #header />
-            </v-date-picker>
-          </v-locale-provider>
+          <v-date-picker
+            v-bind="{ ...($props.datePicker ?? {}) }"
+            @update:modelValue="() => (menuOpen = false)"
+            @click:cancel="() => (menuOpen = false)"
+            v-model="datePickerValueModel"
+          >
+            <template #title />
+            <template #header />
+          </v-date-picker>
         </v-menu>
       </span>
     </template>

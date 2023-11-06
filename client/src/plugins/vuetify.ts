@@ -20,8 +20,14 @@ export default createVuetify({
     themes: {
       light: {
         colors: {
-          primary: "#1867C0",
-          secondary: "#5CBBF6",
+          primary: "#480090",
+          secondary: "#97f443",
+        },
+      },
+      dark: {
+        colors: {
+          primary: "#480090",
+          secondary: "#97f443",
         },
       },
     },
@@ -29,22 +35,22 @@ export default createVuetify({
   components: {
     VDatePicker,
   },
-  date: {
-    locale: {
-      en: enUS,
-      br: ptBR,
-    },
-    adapter: DateFnsAdapter,
-  },
-  locale: {
-    messages: {
-      br: {
-        datePicker: {
-          ok: "Ok",
-          cancel: "Cancelar",
-          header: "Escolha a data",
-        },
-      },
-    },
-  },
+  // date: {
+  //   locale: {
+  //     en: enUS,
+  //     br: ptBR,
+  //   },
+  //   adapter: DateFnsAdapter,
+  // },
+  // locale: {
+  //   messages: {
+  //     br: {
+  //       datePicker: {
+  //         ok: "Ok",
+  //         cancel: "Cancelar",
+  //         header: "Escolha a data",
+  //       },
+  //     },
+  //   },
+  // },
 });
