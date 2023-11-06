@@ -9,6 +9,9 @@ export type Category = {
 defineProps<{
   categoryList: Category[];
 }>();
+defineEmits<{
+  (event: "delete-category", input: Category): void;
+}>();
 </script>
 
 <template>
@@ -33,7 +36,9 @@ defineProps<{
                 Editar
               </v-btn>
 
-              <v-btn color="red"> Excluir </v-btn>
+              <v-btn color="red" @click="() => $emit('delete-category', item)">
+                Excluir
+              </v-btn>
             </td>
           </tr>
         </tbody>
